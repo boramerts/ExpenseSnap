@@ -15,6 +15,10 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
+            let newExpanse = Expense(context: viewContext)
+            newExpanse.amount = 100
+            newExpanse.category = "Test Category"
+            newExpanse.timestamp = Date()
             let newItem = Item(context: viewContext)
             newItem.timestamp = Date()
         }

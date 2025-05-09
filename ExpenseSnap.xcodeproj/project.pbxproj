@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		902FD9942DCA79D00084B15D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902FD9932DCA79D00084B15D /* SettingsView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		902FD9602DC8F0BD0084B15D /* ExpenseSnap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		902FD9932DCA79D00084B15D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		902FD9572DC8F0BD0084B15D = {
 			isa = PBXGroup;
 			children = (
+				902FD9932DCA79D00084B15D /* SettingsView.swift */,
 				902FD9622DC8F0BD0084B15D /* ExpenseSnap */,
 				902FD9612DC8F0BD0084B15D /* Products */,
 			);
@@ -119,6 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				902FD9942DCA79D00084B15D /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
