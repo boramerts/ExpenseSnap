@@ -16,9 +16,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		902FD9622DC8F0BD0084B15D /* ExpenseSnap */ = {
+		902FD9622DC8F0BD0084B15D /* Pockt */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ExpenseSnap;
+			path = Pockt;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -38,7 +38,7 @@
 			isa = PBXGroup;
 			children = (
 				902FD9932DCA79D00084B15D /* SettingsView.swift */,
-				902FD9622DC8F0BD0084B15D /* ExpenseSnap */,
+				902FD9622DC8F0BD0084B15D /* Pockt */,
 				902FD9612DC8F0BD0084B15D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,7 +67,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				902FD9622DC8F0BD0084B15D /* ExpenseSnap */,
+				902FD9622DC8F0BD0084B15D /* Pockt */,
 			);
 			name = ExpenseSnap;
 			packageProductDependencies = (
