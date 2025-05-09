@@ -67,6 +67,12 @@ struct ContentView: View {
         filteredExpenses.reduce(0) { $0 + $1.amount }
     }
     
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy - HH:mm"
+        return formatter
+    }()
+    
     // Helper to generate a row
     @ViewBuilder
     private func expenseRow(for expense: Expense) -> some View {
@@ -75,14 +81,19 @@ struct ContentView: View {
             expense: expense,
             categoryIcon: categoryIconMap[expense.category ?? "Other"] ?? "tag"
         )) {
-            HStack(alignment: .center, spacing: 16) {
-                Text(expense.name ?? expense.name! == "" ? "\(expense.category ?? "Other") Expense" : expense.name!)
-                    .font(.title2)
-                Spacer()
-                VStack(alignment: .trailing, spacing: 4) {
+            VStack {
+                HStack(alignment: .center) {
+                    Text(expense.name ?? expense.name! == "" ? "\(expense.category ?? "Other") Expense" : expense.name!)
+                        .font(.title2)
+                    Spacer()
                     Text("\(currencySymbol)\(expense.amount, specifier: "%.2f")")
                         .font(.title2)
                         .bold()
+                }
+                HStack(alignment: .center) {
+                    Text(Self.dateFormatter.string(from: expense.timestamp ?? Date()))
+                        .font(.caption)
+                    Spacer()
                     HStack(spacing: 4) {
                         Image(systemName: categoryIconMap[expense.category ?? "Other"] ?? "tag")
                         Text(expense.category ?? "Other")
