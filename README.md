@@ -1,5 +1,7 @@
 # Pockt
 
+<img src="https://github.com/user-attachments/assets/bd937dac-f965-45f9-84a5-2e3066b234d3" alt="Pockt App Icon" width="200" height="200">
+
 **Pockt** is an ultra-minimal, SwiftUI-based expense tracker that lets you log earnings and spendings in a single tap. Designed for speed and simplicity, Pockt uses Core Data for local storage and offers a clean, intuitive interface that keeps you focused on your money, not menus.
 
 ## Features
