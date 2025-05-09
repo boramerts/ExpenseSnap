@@ -1,0 +1,23 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+
+# User data
+*.xcworkspace/xcuserdata/
+*.xcuserdatad
+*.xccheckout
+
+# Dependency managers
+Pods/
+Carthage/Build/
+.build/
+
+# macOS
+.DS_Store
+
+# Secrets (don't check these in!)
+*.env
+*.xcconfig.local
+GoogleService-Info.plist
+
