@@ -4,6 +4,8 @@
 
 **Pockt** is an ultra-minimal, SwiftUI-based expense tracker that lets you log earnings and spendings in a single tap. Designed for speed and simplicity, Pockt uses Core Data for local storage and offers a clean, intuitive interface that keeps you focused on your money, not menus.
 
+It is now on App Store: https://apps.apple.com/tr/app/pockt/id6745688416
+
 ## Features
 
 * **One-Tap Entry**: Quickly log any earning or expense by entering amount, selecting a category icon, and an optional note.
