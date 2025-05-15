@@ -123,7 +123,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .safeAreaPadding(EdgeInsets(top: 0, leading: 0, bottom: 150, trailing: 0))
+                    .padding(.bottom, 150)
                     .scrollContentBackground(.hidden)
                 }
                 
@@ -174,53 +174,53 @@ struct ContentView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Text("Expenses")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    HStack{
-                        Menu {
-                            Text("Category Filter").font(.headline).disabled(true)
-                            Button {
-                                selectedCategoryFilter = "All"
-                            } label: {
-                                Text("All Categories")
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Text("Expenses")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
                             }
-                            ForEach(categoriesList.filter { $0 != "All" }, id: \.self) { cat in
-                                Button {
-                                    selectedCategoryFilter = cat
-                                } label: {
-                                    HStack {
-                                        Image(systemName: categoryIconMap[cat] ?? "tag")
-                                        Text(cat)
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                HStack{
+                                    Menu {
+                                        Text("Category Filter").font(.headline).disabled(true)
+                                        Button {
+                                            selectedCategoryFilter = "All"
+                                        } label: {
+                                            Text("All Categories")
+                                        }
+                                        ForEach(categoriesList.filter { $0 != "All" }, id: \.self) { cat in
+                                            Button {
+                                                selectedCategoryFilter = cat
+                                            } label: {
+                                                HStack {
+                                                    Image(systemName: categoryIconMap[cat] ?? "tag")
+                                                    Text(cat)
+                                                }
+                                            }
+                                        }
+                                    } label: {
+                                        Image(systemName: "tag")
+                                            .foregroundStyle(Color("TextColor"))
+                                    }
+                                    Menu {
+                                        Text("Time Filter").font(.headline).disabled(true)
+                                        ForEach(TimeFilter.allCases) { tf in
+                                            Button(tf.rawValue) { selectedTimeFilter = tf }
+                                        }
+                                    } label: {
+                                        Image(systemName: "line.3.horizontal.decrease")
+                                            .foregroundStyle(Color("TextColor"))
+                                    }
+                                    Button {
+                                        showSettings = true
+                                        showAddExpense = false
+                                    } label: {
+                                        Image(systemName: "gearshape")
+                                            .foregroundStyle(Color("TextColor"))
                                     }
                                 }
                             }
-                        } label: {
-                            Image(systemName: "tag")
-                                .foregroundStyle(Color("TextColor"))
                         }
-                        Menu {
-                            Text("Time Filter").font(.headline).disabled(true)
-                            ForEach(TimeFilter.allCases) { tf in
-                                Button(tf.rawValue) { selectedTimeFilter = tf }
-                            }
-                        } label: {
-                            Image(systemName: "line.3.horizontal.decrease")
-                                .foregroundStyle(Color("TextColor"))
-                        }
-                        Button {
-                            showSettings = true
-                            showAddExpense = false
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .foregroundStyle(Color("TextColor"))
-                        }
-                    }
-                }
-            }
             .sheet(isPresented: $showAddExpense) {
                 AddExpenseView(vm: vm)
             }

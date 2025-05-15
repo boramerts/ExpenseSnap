@@ -14,15 +14,20 @@ struct Category: Identifiable, Hashable {
 }
 
 struct AddExpenseView: View {
+    private enum Field: Hashable {
+        case name, amount, note
+    }
+    @FocusState private var focusedField: Field?
+    
     @ObservedObject var vm: ExpenseViewModel
     @Environment(\.dismiss) var dismiss
-
+    
     @State private var name: String = ""
     @State private var amount: String = ""
     @State private var selectedCategory: Category = Category(name: "Other", iconName: "tag")
     @State private var note: String = ""
     @AppStorage("currencySymbol") private var currencySymbol = "₺"
-
+    
     @State private var categories: [Category] = [
         Category(name: "Food", iconName: "fork.knife"),
         Category(name: "Transport", iconName: "car"),
@@ -33,11 +38,11 @@ struct AddExpenseView: View {
     @State private var showAddCategory = false
     @State private var newCategoryName = ""
     @State private var isSpending: Bool = false
-
+    
     private var isFormValid: Bool {
         Double(amount) != nil
     }
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -52,90 +57,97 @@ struct AddExpenseView: View {
             ZStack {
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Type Selector
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Type")
-                                .font(.headline)
-                            Picker("", selection: $isSpending) {
-                                Text("Earning").tag(false)
-                                Text("Spending").tag(true)
-                            }
-                            .pickerStyle(.segmented)
-                        }
-                        
-                        // Name Field
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Name")
-                                .font(.headline)
-                            TextField("e.g. Bus Ticket", text: $name)
-                                .padding(12)
-                                .background(RoundedRectangle(cornerRadius: 8)
-                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1))
-                        }
-
-                        // Amount Field
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Amount (\(currencySymbol))")
-                                .font(.headline)
-                            TextField("", text: $amount)
-                                .keyboardType(.decimalPad)
-                                .onChange(of: amount) { newValue in
-                                    let filtered = newValue.filter { "0123456789.".contains($0) }
-                                    if filtered != newValue {
-                                        amount = filtered
-                                    }
+                        if focusedField != .note {
+                            VStack(alignment: .leading, spacing: 4) {
+                                // Type Selector
+                                Text("Type")
+                                    .font(.headline)
+                                Picker("", selection: $isSpending) {
+                                    Text("Earning").tag(false)
+                                    Text("Spending").tag(true)
                                 }
-                                .padding(12)
-                                .background(
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(isSpending ? Color.red.opacity(0.1) : Color.green.opacity(0.1))
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(isSpending ? Color.red.opacity(0.3) : Color.green.opacity(0.3), lineWidth: 1)
-                                    }
-                                )
-                        }
-
-                        // Category Menu
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Category")
-                                .font(.headline)
-                            Menu {
-                                ForEach(categories) { cat in
-                                    Button {
-                                        selectedCategory = cat
-                                    } label: {
-                                        HStack {
-                                            Image(systemName: cat.iconName)
-                                            Text(cat.name)
+                                .pickerStyle(.segmented)
+                            }
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                        
+                            // Name Field
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Name")
+                                    .font(.headline)
+                                TextField("e.g. Bus Ticket", text: $name)
+                                    .focused($focusedField, equals: .name)
+                                    .padding(12)
+                                    .background(RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1))
+                            }
+                            
+                            // Amount Field
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Amount (\(currencySymbol))")
+                                    .font(.headline)
+                                TextField("", text: $amount)
+                                    .keyboardType(.decimalPad)
+                                    .focused($focusedField, equals: .amount)
+                                    .onChange(of: amount) { newValue in
+                                        let filtered = newValue.filter { "0123456789.".contains($0) }
+                                        if filtered != newValue {
+                                            amount = filtered
                                         }
                                     }
+                                    .padding(12)
+                                    .background(
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(isSpending ? Color.red.opacity(0.1) : Color.green.opacity(0.1))
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .stroke(isSpending ? Color.red.opacity(0.3) : Color.green.opacity(0.3), lineWidth: 1)
+                                        }
+                                    )
+                            }
+                            
+                            // Category Menu
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Category")
+                                    .font(.headline)
+                                Menu {
+                                    ForEach(categories) { cat in
+                                        Button {
+                                            selectedCategory = cat
+                                        } label: {
+                                            HStack {
+                                                Image(systemName: cat.iconName)
+                                                Text(cat.name)
+                                            }
+                                        }
+                                    }
+                                    Button("Add New Category…") { showAddCategory = true }
+                                } label: {
+                                    HStack {
+                                        Image(systemName: selectedCategory.iconName)
+                                        Text(selectedCategory.name)
+                                        Spacer()
+                                        Image(systemName: "chevron.down")
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(12)
+                                    .background(RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1))
                                 }
-                                Button("Add New Category…") { showAddCategory = true }
-                            } label: {
-                                HStack {
-                                    Image(systemName: selectedCategory.iconName)
-                                    Text(selectedCategory.name)
-                                    Spacer()
-                                    Image(systemName: "chevron.down")
-                                        .foregroundColor(.gray)
-                                }
-                                .padding(12)
-                                .background(RoundedRectangle(cornerRadius: 8)
-                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1))
                             }
                         }
-
+                        
                         // Note Field
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Note (Optional)")
                                 .font(.headline)
                             TextField("Add a note…", text: $note)
+                                .focused($focusedField, equals: .note)
                                 .padding(12)
                                 .background(RoundedRectangle(cornerRadius: 8)
-                                                .stroke(Color.gray.opacity(0.3), lineWidth: 1))
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1))
                         }
                     }
+                    .animation(.smooth(duration: 0.2), value: focusedField)
                     .padding()
                 }
                 .padding(.horizontal)
@@ -178,6 +190,46 @@ struct AddExpenseView: View {
                                 isPresented: $showAddCategory)
             }
         }
+        .toolbar { // TODO: Add up-down chevrons to change focus between fields.
+            ToolbarItem(placement: .keyboard) {
+                HStack {
+                    Button("Done") {
+                        focusedField = nil
+                    }
+                    Spacer()
+                    if focusedField != .note {
+                        Button {
+                            switch focusedField {
+                            case .name:
+                                focusedField = .amount
+                            case .amount:
+                                focusedField = .note
+                            case .note:
+                                focusedField = .name
+                            case nil:
+                                focusedField = .name
+                            }
+                        } label: {
+                            Image(systemName: "chevron.down")
+                        }
+                        Button {
+                            switch focusedField {
+                            case .name:
+                                focusedField = .note
+                            case .amount:
+                                focusedField = .name
+                            case .note:
+                                focusedField = .amount
+                            case nil:
+                                focusedField = .name
+                            }
+                        } label: {
+                            Image(systemName: "chevron.up")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -189,10 +241,10 @@ struct AddCategoryView: View {
     @Binding var categories: [Category]
     @Binding var selectedCategory: Category
     @Binding var isPresented: Bool
-
+    
     @State private var newCategoryName = ""
     @State private var newIconName = "tag"
-
+    
     let iconOptions = [
         "fork.knife", "bag", "house", "sofa", "oven",
         "car", "truck.box", "airplane",
@@ -209,7 +261,7 @@ struct AddCategoryView: View {
     private let iconColumns = [
         GridItem(.adaptive(minimum: 50))
     ]
-
+    
     var body: some View {
         NavigationView {
             Form {
