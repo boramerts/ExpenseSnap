@@ -246,18 +246,57 @@ struct AddCategoryView: View {
     @State private var newIconName = "tag"
     
     let iconOptions = [
-        "fork.knife", "bag", "house", "sofa", "oven",
-        "car", "truck.box", "airplane",
-        "gift", "party.popper", "wallet.bifold",
-        "music.note", "tv", "gamecontroller",
-        "leaf", "heart", "pawprint",
-        "figure.run", "figure.2", "graduationcap",
-        "book", "document", "text.document", "building.columns",
-        "camera.macro",
-        "sun.max", "moon", "globe.europe.africa",
-        "curlybraces",
-        "pencil"
+        // Education & Writing
+        "pencil", "pencil.line", "text.document", "document", "lock.document", "list.bullet.clipboard",
+        "list.clipboard", "heart.text.clipboard", "calendar", "book", "books.vertical", "text.book.closed",
+        "bookmark", "graduationcap", "scroll",
+
+        // People & Figures
+        "person", "person.crop.circle", "figure", "figure.2", "figure.2.arms.open", "figure.walk", "figure.run",
+        "figure.dance", "figure.and.child.holdinghands", "figure.2.and.child.holdinghands",
+
+        // Office & School Supplies
+        "folder", "backpack", "paperclip", "pencil.and.ruler", "ruler", "paintbrush", "paintbrush.pointed",
+        "signature", "stethoscope", "printer", "case", "gearshape", "wrench.adjustable", "hammer",
+
+        // Technology & Devices
+        "display", "pc", "laptopcomputer", "iphone", "apple.terminal", "wifi",
+
+        // Home & Furniture
+        "sofa", "bed.double", "toilet", "shower", "refrigerator", "tent", "building",
+
+        // Security
+        "lock", "lock.open", "checkmark.seal", "sos",
+
+        // Communication & Media
+        "camera", "phone", "video", "envelope",
+
+        // Shopping & Finance
+        "bag", "cart", "creditcard", "wallet.bifold",
+
+        // Travel & Transport
+        "airplane", "car", "bus", "tram", "ferry", "bicycle", "moped", "stroller", "fuelpump",
+
+        // Nature & Weather
+        "sun.max", "moon", "sparkle", "sparkles", "globe.americas", "globe.europe.africa",
+        "globe.asia.australia", "globe.central.south.asia",
+
+        // Celebrations & Misc
+        "party.popper", "balloon.2",
+
+        // Symbols & Icons
+        "star", "heart", "flag", "tag", "infinity", "repeat", "shuffle",
+
+        // Animals
+        "hare", "tortoise", "dog", "cat", "lizard", "bird", "fish", "pawprint",
+
+        // Clothing
+        "tshirt",
+
+        // Entertainment
+        "theatermasks", "powerplug", "powerplug.portrait"
     ]
+    
     private let iconColumns = [
         GridItem(.adaptive(minimum: 50))
     ]
