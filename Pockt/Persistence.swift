@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import Foundation
 
 struct PersistenceController {
     static let shared = PersistenceController()
@@ -36,7 +37,12 @@ struct PersistenceController {
     let container: NSPersistentContainer
 
     init(inMemory: Bool = false) {
+        let storeURL = AppGroup.pockt.containerURL.appendingPathComponent("ExpenseSnap.sqlite")
+        let description = NSPersistentStoreDescription(url: storeURL)
+        
         container = NSPersistentContainer(name: "ExpenseSnap")
+        container.persistentStoreDescriptions = [description]
+        
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
