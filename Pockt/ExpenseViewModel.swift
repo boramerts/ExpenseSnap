@@ -7,18 +7,13 @@
 
 import Foundation
 import CoreData
+import WidgetKit
 
 class ExpenseViewModel: ObservableObject {
-    let container: NSPersistentContainer
+    let container = PersistenceController.shared.container
     @Published var expenses: [Expense] = []
 
     init() {
-        container = NSPersistentContainer(name: "ExpenseSnap") // Replace with your .xcdatamodeld filename
-        container.loadPersistentStores { _, error in
-            if let error = error {
-                fatalError("Core Data failed: \(error.localizedDescription)")
-            }
-        }
         fetchExpenses()
     }
 
@@ -40,7 +35,7 @@ class ExpenseViewModel: ObservableObject {
         new.category = category
         new.note = note
         new.timestamp = Date()
-
+        WidgetCenter.shared.reloadTimelines(ofKind: "PocktWidget")
         save()
     }
 

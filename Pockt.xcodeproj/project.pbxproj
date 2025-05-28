@@ -8,11 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		902FD9942DCA79D00084B15D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902FD9932DCA79D00084B15D /* SettingsView.swift */; };
+		9050F6422DE723930079EFAB /* ExpenseSnap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9050F6382DE723930079EFAB /* ExpenseSnap.xcdatamodeld */; };
+		9050F6462DE723930079EFAB /* ExpenseSnap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9050F6382DE723930079EFAB /* ExpenseSnap.xcdatamodeld */; };
 		90E9DBD12DE3664E000DEE15 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90708B512DE3349C00941DB9 /* WidgetKit.framework */; };
 		90E9DBD22DE3664E000DEE15 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90708B532DE3349C00941DB9 /* SwiftUI.framework */; };
 		90E9DBE32DE3664E000DEE15 /* PocktWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 90E9DBD02DE3664E000DEE15 /* PocktWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		90E9DBF92DE3B6AB000DEE15 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E9DBF82DE3B6AB000DEE15 /* AppGroup.swift */; };
 		90E9DBFD2DE3C227000DEE15 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E9DBF82DE3B6AB000DEE15 /* AppGroup.swift */; };
+		90EBA9D62DE7490700C1F489 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90EBA9CF2DE7490700C1F489 /* Persistence.swift */; };
+		90EBA9D72DE7490700C1F489 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90EBA9CF2DE7490700C1F489 /* Persistence.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +46,7 @@
 /* Begin PBXFileReference section */
 		902FD9602DC8F0BD0084B15D /* ExpenseSnap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		902FD9932DCA79D00084B15D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		9050F63C2DE723930079EFAB /* ExpenseSnap.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ExpenseSnap.xcdatamodel; sourceTree = "<group>"; };
 		90708B512DE3349C00941DB9 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		90708B532DE3349C00941DB9 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		90E9DBAA2DE33FD1000DEE15 /* ExpenseSnap-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "ExpenseSnap-Info.plist"; sourceTree = "<group>"; };
@@ -49,6 +54,7 @@
 		90E9DBF52DE3A4F5000DEE15 /* ExpenseSnap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExpenseSnap.entitlements; sourceTree = "<group>"; };
 		90E9DBF62DE3A613000DEE15 /* PocktWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PocktWidgetExtension.entitlements; sourceTree = "<group>"; };
 		90E9DBF82DE3B6AB000DEE15 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
+		90EBA9CF2DE7490700C1F489 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,22 +65,11 @@
 			);
 			target = 90E9DBCF2DE3664E000DEE15 /* PocktWidgetExtension */;
 		};
-		90E9DBFB2DE3B747000DEE15 /* Exceptions for "Pockt" folder in "PocktWidgetExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				ExpenseSnap.xcdatamodeld,
-				Persistence.swift,
-			);
-			target = 90E9DBCF2DE3664E000DEE15 /* PocktWidgetExtension */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		902FD9622DC8F0BD0084B15D /* Pockt */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				90E9DBFB2DE3B747000DEE15 /* Exceptions for "Pockt" folder in "PocktWidgetExtension" target */,
-			);
 			path = Pockt;
 			sourceTree = "<group>";
 		};
@@ -116,6 +111,8 @@
 				90E9DBAA2DE33FD1000DEE15 /* ExpenseSnap-Info.plist */,
 				90E9DBF82DE3B6AB000DEE15 /* AppGroup.swift */,
 				902FD9932DCA79D00084B15D /* SettingsView.swift */,
+				9050F6382DE723930079EFAB /* ExpenseSnap.xcdatamodeld */,
+				90EBA9CF2DE7490700C1F489 /* Persistence.swift */,
 				902FD9622DC8F0BD0084B15D /* Pockt */,
 				90E9DBD32DE3664E000DEE15 /* PocktWidget */,
 				90708B502DE3349C00941DB9 /* Frameworks */,
@@ -251,7 +248,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				902FD9942DCA79D00084B15D /* SettingsView.swift in Sources */,
+				90EBA9D62DE7490700C1F489 /* Persistence.swift in Sources */,
 				90E9DBF92DE3B6AB000DEE15 /* AppGroup.swift in Sources */,
+				9050F6422DE723930079EFAB /* ExpenseSnap.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,7 +258,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90EBA9D72DE7490700C1F489 /* Persistence.swift in Sources */,
 				90E9DBFD2DE3C227000DEE15 /* AppGroup.swift in Sources */,
+				9050F6462DE723930079EFAB /* ExpenseSnap.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -562,6 +563,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		9050F6382DE723930079EFAB /* ExpenseSnap.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				9050F63C2DE723930079EFAB /* ExpenseSnap.xcdatamodel */,
+			);
+			currentVersion = 9050F63C2DE723930079EFAB /* ExpenseSnap.xcdatamodel */;
+			path = ExpenseSnap.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 902FD9582DC8F0BD0084B15D /* Project object */;
 }

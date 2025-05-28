@@ -5,8 +5,9 @@
 //  Created by Bora Mert on 25.05.2025.
 //
 
-// TODO: Data does not update. Fix it.
 // TODO: Create medium and large versions.
+// TODO: Improve update logic
+// TODO: Work on optimization
 
 
 import WidgetKit
@@ -15,21 +16,59 @@ import CoreData
 
 struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationAppIntent())
+        SimpleEntry(date: Date(), configuration: ConfigurationAppIntent(), totalExpense: 0.0)
     }
 
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: configuration)
+        let totalExpense = await loadTodayTotalExpense()
+        return SimpleEntry(date: Date(), configuration: configuration, totalExpense: totalExpense)
+    }
+    
+    private func loadTodayTotalExpense() async -> Double {
+        let context = PersistenceController.shared.container.viewContext
+        let fetchRequest: NSFetchRequest<Expense> = Expense.fetchRequest()
+        
+        let url = AppGroup.pockt.containerURL.appendingPathComponent("ExpenseSnap.sqlite")
+        print("Widget store path: \(url.path)")
+        print("Exists in widget? \(FileManager.default.fileExists(atPath: url.path))")
+        
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+
+        fetchRequest.predicate = NSPredicate(format: "timestamp >= %@ AND timestamp < %@", startOfDay as NSDate, endOfDay as NSDate)
+        
+        do {
+            let allExpenses = try context.fetch(Expense.fetchRequest())
+            
+            print("🧩 Widget fetched \(allExpenses.count) TOTAL expenses in database")
+            for expense in allExpenses {
+                print("Amount: \(expense.amount), Timestamp: \(String(describing: expense.timestamp))")
+            }
+
+            let todayExpenses = allExpenses.filter {
+                guard let ts = $0.timestamp else { return false }
+                return Calendar.current.isDateInToday(ts)
+            }
+
+            print("🧩 Widget fetched \(todayExpenses.count) TODAY expenses")
+            return todayExpenses.reduce(0) { $0 + $1.amount }
+            
+        } catch {
+            print("❌ Widget fetch failed: \(error)")
+            return 0
+        }
     }
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
         var entries: [SimpleEntry] = []
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
+        let totalExpense = await loadTodayTotalExpense()
+
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
+            let entry = SimpleEntry(date: entryDate, configuration: configuration, totalExpense: totalExpense)
             entries.append(entry)
         }
 
@@ -44,31 +83,19 @@ struct Provider: AppIntentTimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let configuration: ConfigurationAppIntent
+    let totalExpense: Double
 }
 
 struct PocktWidgetEntryView : View {
     @Environment(\.widgetRenderingMode) var widgetRenderingMode
     var entry: Provider.Entry
-    
-    @FetchRequest(sortDescriptors: [])
-    private var expenses: FetchedResults<Expense>
-    private var todayExpenses: [Expense] {
-        expenses.filter { expense in
-            let ts = Date()
-            let calendar = Calendar.current
-            return calendar.isDateInToday(ts)
-        }
-    }
-    private var totalExpense: Double {
-        todayExpenses.reduce(0) { $0 + $1.amount }
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
             Text("Today")
                 .font(.system(size: 16, weight: .bold))
                 .padding(.leading, 7)
-            ExpenseBox(expenseValue: totalExpense, renderingMode: widgetRenderingMode)
+            ExpenseBox(expenseValue: entry.totalExpense, renderingMode: widgetRenderingMode)
             HStack {
                 Spacer()
                 HStack (spacing: 2) {
@@ -114,11 +141,13 @@ struct PocktWidget: Widget {
     let kind: String = "PocktWidget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
+        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider())
+        { entry in
             PocktWidgetEntryView(entry: entry)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .containerBackground(Color("ButtonColor"), for: .widget)
         }
+        .supportedFamilies([.systemSmall])
     }
 }
 
@@ -139,6 +168,6 @@ extension ConfigurationAppIntent {
 #Preview(as: .systemSmall) {
     PocktWidget()
 } timeline: {
-    SimpleEntry(date: .now, configuration: .smiley)
-    SimpleEntry(date: .now, configuration: .starEyes)
+    SimpleEntry(date: .now, configuration: .smiley, totalExpense: 0.0)
+    SimpleEntry(date: .now, configuration: .starEyes, totalExpense: 0.0)
 }

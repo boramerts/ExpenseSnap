@@ -38,14 +38,15 @@ struct PersistenceController {
 
     init(inMemory: Bool = false) {
         let storeURL = AppGroup.pockt.containerURL.appendingPathComponent("ExpenseSnap.sqlite")
+        print("Persistence: App store path: \(storeURL.path)")
         let description = NSPersistentStoreDescription(url: storeURL)
         
         container = NSPersistentContainer(name: "ExpenseSnap")
         container.persistentStoreDescriptions = [description]
         
-        if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
-        }
+//        if inMemory {
+//            container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+//        }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
