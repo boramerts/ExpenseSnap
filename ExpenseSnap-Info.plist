@@ -4,5 +4,16 @@
 <dict>
 	<key>NSUserActivityTypes</key>
 	<array/>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>com.boramerts.ExpenseSnap</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>pockt</string>
+        </array>
+      </dict>
+    </array>
 </dict>
 </plist>
