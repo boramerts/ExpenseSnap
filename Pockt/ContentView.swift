@@ -30,7 +30,7 @@ struct ContentView: View {
     @State private var selectedTimeFilter: TimeFilter = .today
     @State private var selectedCategoryFilter: String = "All"
     @State private var showSettings = false
-    @AppStorage("currencySymbol") private var currencySymbol = "₺"
+    @AppStorage("currencySymbol", store: UserDefaults(suiteName: "group.pockt.boramerts")) private var currencySymbol = "$"
     
     @State private var currencySymbolMap: [String: String] = [
         "TRY": "₺",

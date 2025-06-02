@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct SettingsView: View {
     @ObservedObject var vm: ExpenseViewModel
     @AppStorage("isDarkMode") private var isDarkMode = false
-    @AppStorage("currencySymbol") private var currencySymbol = "₺"
+    @AppStorage("currencySymbol", store: UserDefaults(suiteName: "group.pockt.boramerts")) private var currencySymbol = "$"
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteConfirmation = false
 
@@ -54,6 +55,8 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
+                        UserDefaults(suiteName: "group.pockt.boramerts")?.synchronize()
+                        WidgetCenter.shared.reloadAllTimelines()
                         dismiss()
                     }
                 }

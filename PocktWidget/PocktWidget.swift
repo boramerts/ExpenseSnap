@@ -5,15 +5,19 @@
 //  Created by Bora Mert on 25.05.2025.
 //
 
-// TODO: Create medium and large versions.
-// TODO: Improve update logic
 // TODO: Work on optimization
+// TODO: Make widgets configurable
 
 import WidgetKit
 import SwiftUI
 import CoreData
 
 struct Provider: AppIntentTimelineProvider {
+    private func getCurrencySymbol() -> String {
+        let defaults = UserDefaults(suiteName: "group.pockt.boramerts")
+        return defaults?.string(forKey: "currencySymbol") ?? "$"
+    }
+
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(
             date: Date(),
@@ -21,7 +25,8 @@ struct Provider: AppIntentTimelineProvider {
             totalToday: 0.0,
             totalMonth: 0.0,
             totalYear: 0.0,
-            totalAll: 0.0
+            totalAll: 0.0,
+            currencySymbol: getCurrencySymbol()
         )
     }
     
@@ -31,17 +36,22 @@ struct Provider: AppIntentTimelineProvider {
         let month    = await loadTotalExpense(range: "month")
         let year     = await loadTotalExpense(range: "year")
         let allTime  = await loadTotalExpense(range: "all")
+        let currencySymbol = getCurrencySymbol()
         return SimpleEntry(
             date: Date(),
             configuration: configuration,
-            totalToday: today,
+            totalToday: configuration.timeRange == .today ? today :
+                        configuration.timeRange == .month ? month :
+                        configuration.timeRange == .year ? year : allTime,
             totalMonth: month,
             totalYear: year,
-            totalAll: allTime
+            totalAll: allTime,
+            currencySymbol: currencySymbol
         )
     }
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
+        print("🔁 Widget configuration time range: \(configuration.timeRange.rawValue)")
         var entries: [SimpleEntry] = []
         let currentDate = Date()
         
@@ -50,16 +60,20 @@ struct Provider: AppIntentTimelineProvider {
         let month    = await loadTotalExpense(range: "month")
         let year     = await loadTotalExpense(range: "year")
         let allTime  = await loadTotalExpense(range: "all")
+        let currencySymbol = getCurrencySymbol()
         
         for hourOffset in 0..<5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
             let entry = SimpleEntry(
                 date: entryDate,
                 configuration: configuration,
-                totalToday: today,
+                totalToday: configuration.timeRange == .today ? today :
+                            configuration.timeRange == .month ? month :
+                            configuration.timeRange == .year ? year : allTime,
                 totalMonth: month,
                 totalYear: year,
-                totalAll: allTime
+                totalAll: allTime,
+                currencySymbol: currencySymbol
             )
             entries.append(entry)
         }
@@ -132,6 +146,7 @@ struct SimpleEntry: TimelineEntry {
     let totalMonth: Double
     let totalYear: Double
     let totalAll: Double
+    let currencySymbol: String
 }
 
 struct PocktWidgetEntryView : View {
@@ -154,32 +169,28 @@ struct PocktWidgetEntryView : View {
             circularBody
         case .accessoryRectangular:
             rectangularBody
-            // To show monthly instead of daily:
-            // rectangularMonthBody
-            // To show yearly:
-            // rectangularYearBody
-            // To show all-time:
-            // rectangularAllBody
         case .accessoryInline:
             inlineBody
-            // To show monthly:
-            // inlineMonthBody
-            // To show yearly:
-            // inlineYearBody
-            // To show all-time:
-            // inlineAllBody
         @unknown default:
             smallBody
         }
     }
     
-    /// Small widget shows only today's total
+    /// Small widget shows only selected time range's total
     private var smallBody: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            Text("Today")
+        let label: String
+        let total: Double
+        switch entry.configuration.timeRange {
+        case .today: label = "Today"; total = entry.totalToday
+        case .month: label = "Month"; total = entry.totalMonth
+        case .year: label = "Year"; total = entry.totalYear
+        case .all: label = "All Time"; total = entry.totalAll
+        }
+        return VStack(alignment: .leading, spacing: 7) {
+            Text(label)
                 .font(.system(size: 16, weight: .bold))
                 .padding(.leading, 7)
-            ExpenseBox(expenseValue: entry.totalToday, renderingMode: widgetRenderingMode)
+            ExpenseBox(expenseValue: total, currencySymbol: entry.currencySymbol, renderingMode: widgetRenderingMode)
                 .frame(height: 50)
             HStack {
                 Spacer()
@@ -201,22 +212,40 @@ struct PocktWidgetEntryView : View {
         }
     }
     
-    /// Medium widget shows today's and this month's totals
+    /// Medium widget shows selected and next range's totals
     private var mediumBody: some View {
-        VStack(alignment: .leading, spacing: 7) {
+        let label: String
+        let total: Double
+        let nextLabel: String
+        let nextTotal: Double
+        switch entry.configuration.timeRange {
+        case .today:
+            label = "Today"; total = entry.totalToday
+            nextLabel = "Month"; nextTotal = entry.totalMonth
+        case .month:
+            label = "Month"; total = entry.totalMonth
+            nextLabel = "Year"; nextTotal = entry.totalYear
+        case .year:
+            label = "Year"; total = entry.totalYear
+            nextLabel = "All Time"; nextTotal = entry.totalAll
+        case .all:
+            label = "All Time"; total = entry.totalAll
+            nextLabel = "Today"; nextTotal = entry.totalToday
+        }
+        return VStack(alignment: .leading, spacing: 7) {
             HStack(spacing: 5) {
                 VStack (alignment: .leading){
-                    Text("Today")
+                    Text(label)
                         .font(.system(size: 16, weight: .bold))
                         .padding(.leading, 8)
-                    ExpenseBox(expenseValue: entry.totalToday, renderingMode: widgetRenderingMode)
+                    ExpenseBox(expenseValue: total, currencySymbol: entry.currencySymbol, renderingMode: widgetRenderingMode)
                         .frame(height: 55)
                 }
                 VStack (alignment: .leading){
-                    Text("Month")
+                    Text(nextLabel)
                         .font(.system(size: 16, weight: .bold))
                         .padding(.leading, 8)
-                    ExpenseBox(expenseValue: entry.totalMonth, renderingMode: widgetRenderingMode)
+                    ExpenseBox(expenseValue: nextTotal, currencySymbol: entry.currencySymbol, renderingMode: widgetRenderingMode)
                         .frame(height: 55)
                 }
             }
@@ -248,7 +277,7 @@ struct PocktWidgetEntryView : View {
                     .font(.system(size: 16, weight: .bold))
                     .padding(.leading, 8)
                 Spacer()
-                ExpenseBox(expenseValue: entry.totalToday, renderingMode: widgetRenderingMode)
+                ExpenseBox(expenseValue: entry.totalToday, currencySymbol: entry.currencySymbol, renderingMode: widgetRenderingMode)
                     .frame(width: 200, height: 60)
             }
             
@@ -257,7 +286,7 @@ struct PocktWidgetEntryView : View {
                     .font(.system(size: 16, weight: .bold))
                     .padding(.leading, 8)
                 Spacer()
-                ExpenseBox(expenseValue: entry.totalMonth, renderingMode: widgetRenderingMode)
+                ExpenseBox(expenseValue: entry.totalMonth, currencySymbol: entry.currencySymbol, renderingMode: widgetRenderingMode)
                     .frame(width: 200, height: 60)
             }
             
@@ -266,7 +295,7 @@ struct PocktWidgetEntryView : View {
                     .font(.system(size: 16, weight: .bold))
                     .padding(.leading, 8)
                 Spacer()
-                ExpenseBox(expenseValue: entry.totalYear, renderingMode: widgetRenderingMode)
+                ExpenseBox(expenseValue: entry.totalYear, currencySymbol: entry.currencySymbol, renderingMode: widgetRenderingMode)
                     .frame(width: 200, height: 60)
             }
             
@@ -275,7 +304,7 @@ struct PocktWidgetEntryView : View {
                     .font(.system(size: 16, weight: .bold))
                     .padding(.leading, 8)
                 Spacer()
-                ExpenseBox(expenseValue: entry.totalAll, renderingMode: widgetRenderingMode)
+                ExpenseBox(expenseValue: entry.totalAll, currencySymbol: entry.currencySymbol, renderingMode: widgetRenderingMode)
                     .frame(width: 200, height: 60)
             }
             
@@ -304,8 +333,16 @@ struct PocktWidgetEntryView : View {
     }
     
     private var circularBody: some View {
-        // Compute short-form string with "k" if needed
-        let total = entry.totalToday
+        // Compute label and total for selected time range
+        let label: String
+        let total: Double
+        switch entry.configuration.timeRange {
+        case .today: label = "Today"; total = entry.totalToday
+        case .month: label = "Month"; total = entry.totalMonth
+        case .year: label = "Year"; total = entry.totalYear
+        case .all: label = "All Time"; total = entry.totalAll
+        }
+
         let displayText: String
         if total >= 1_000 {
             let thousands = Int(total / 1_000)
@@ -319,95 +356,42 @@ struct PocktWidgetEntryView : View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 25)
-            Text("$\(displayText)")
+            Text("\(entry.currencySymbol)\(displayText)")
                 .font(.system(size: 16, weight: .regular))
         }
     }
     
     private var inlineBody: some View {
-        HStack {
+        let label: String
+        let total: Double
+        switch entry.configuration.timeRange {
+        case .today: label = "Today"; total = entry.totalToday
+        case .month: label = "Month"; total = entry.totalMonth
+        case .year: label = "Year"; total = entry.totalYear
+        case .all: label = "All Time"; total = entry.totalAll
+        }
+        return HStack {
             Image(systemName: "wallet.bifold")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-            Text("$\(entry.totalToday, specifier: "%.2f")")
-        }
-    }
-
-    /// Inline body showing this month's total
-    private var inlineMonthBody: some View {
-        HStack {
-            Image(systemName: "calendar")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-            Text("$\(entry.totalMonth, specifier: "%.2f")")
-        }
-    }
-
-    /// Inline body showing this year's total
-    private var inlineYearBody: some View {
-        HStack {
-            Image(systemName: "calendar.circle")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-            Text("$\(entry.totalYear, specifier: "%.2f")")
-        }
-    }
-
-    /// Inline body showing all-time total
-    private var inlineAllBody: some View {
-        HStack {
-            Image(systemName: "infinity")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-            Text("$\(entry.totalAll, specifier: "%.2f")")
+            Text("\(entry.currencySymbol)\(total, specifier: "%.2f")")
         }
     }
 
     private var rectangularBody: some View {
-        VStack(alignment: .leading) {
-            Text("Today")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.primary.opacity(0.5))
-            Text("$\(entry.totalToday, specifier: "%.2f")")
-                .font(.system(size: 20, weight: .regular))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
+        let label: String
+        let total: Double
+        switch entry.configuration.timeRange {
+        case .today: label = "Today"; total = entry.totalToday
+        case .month: label = "Month"; total = entry.totalMonth
+        case .year: label = "Year"; total = entry.totalYear
+        case .all: label = "All Time"; total = entry.totalAll
         }
-    }
-
-    /// Rectangular body showing this month's total
-    private var rectangularMonthBody: some View {
-        VStack(alignment: .leading) {
-            Text("Month")
+        return VStack(alignment: .leading) {
+            Text(label)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(Color.primary.opacity(0.5))
-            Text("$\(entry.totalMonth, specifier: "%.2f")")
-                .font(.system(size: 20, weight: .regular))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-        }
-    }
-
-    /// Rectangular body showing this year's total
-    private var rectangularYearBody: some View {
-        VStack(alignment: .leading) {
-            Text("Year")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.primary.opacity(0.5))
-            Text("$\(entry.totalYear, specifier: "%.2f")")
-                .font(.system(size: 20, weight: .regular))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-        }
-    }
-
-    /// Rectangular body showing all-time total
-    private var rectangularAllBody: some View {
-        VStack(alignment: .leading) {
-            Text("All Time")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.primary.opacity(0.5))
-            Text("$\(entry.totalAll, specifier: "%.2f")")
+            Text("\(entry.currencySymbol)\(total, specifier: "%.2f")")
                 .font(.system(size: 20, weight: .regular))
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
@@ -417,10 +401,11 @@ struct PocktWidgetEntryView : View {
 
 struct ExpenseBox: View {
     let expenseValue: Double
+    let currencySymbol: String
     let renderingMode: WidgetRenderingMode
     var body: some View {
         HStack {
-            Text("$\(expenseValue, specifier: "%.2f")")
+            Text("\(currencySymbol)\(expenseValue, specifier: "%.2f")")
                 .font(.system(size: 30, weight: .medium))
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
@@ -473,7 +458,8 @@ extension ConfigurationAppIntent {
         totalToday: 120000.34,
         totalMonth: 56000.78,
         totalYear: 123.45,
-        totalAll: 987.65
+        totalAll: 987.65,
+        currencySymbol: "$"
     )
     SimpleEntry(
         date: .now,
@@ -481,6 +467,7 @@ extension ConfigurationAppIntent {
         totalToday: -10.0,
         totalMonth: -100.0,
         totalYear: 0.0,
-        totalAll: 30000.0
+        totalAll: 30000.0,
+        currencySymbol: "₺"
     )
 }
