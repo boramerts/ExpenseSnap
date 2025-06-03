@@ -28,13 +28,13 @@ class ExpenseViewModel: ObservableObject {
         }
     }
 
-    func addExpense(name: String?, amount: Double, category: String, note: String?) {
+    func addExpense(name: String?, amount: Double, category: String, note: String?, date: Date?) {
         let new = Expense(context: container.viewContext)
         new.name = name ?? ""
         new.amount = amount
         new.category = category
         new.note = note
-        new.timestamp = Date()
+        new.timestamp = date ?? Date()
         WidgetCenter.shared.reloadTimelines(ofKind: "PocktWidget")
         save()
     }

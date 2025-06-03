@@ -26,6 +26,7 @@ struct AddExpenseView: View {
     @State private var amount: String = ""
     @State private var selectedCategory: Category = Category(name: "Other", iconName: "tag")
     @State private var note: String = ""
+    @State private var date: Date = Date.now
     @AppStorage("currencySymbol") private var currencySymbol = "₺"
     
     @State private var categories: [Category] = [
@@ -69,7 +70,7 @@ struct AddExpenseView: View {
                                 .pickerStyle(.segmented)
                             }
                             .transition(.move(edge: .top).combined(with: .opacity))
-                        
+                            
                             // Name Field
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Name")
@@ -146,6 +147,15 @@ struct AddExpenseView: View {
                                 .background(RoundedRectangle(cornerRadius: 8)
                                     .stroke(Color.gray.opacity(0.3), lineWidth: 1))
                         }
+                        
+                        // Date Field
+                        VStack(alignment: .leading, spacing: 4) {
+                            DatePicker(selection: $date, in: ...Date.now, displayedComponents: .date) {
+                                Text("Date")
+                                    .font(.headline)
+                            }
+                            .tint(Color.black)
+                        }
                     }
                     .animation(.smooth(duration: 0.2), value: focusedField)
                     .padding()
@@ -161,7 +171,8 @@ struct AddExpenseView: View {
                             name: name,
                             amount: final,
                             category: selectedCategory.name,
-                            note: note.isEmpty ? nil : note
+                            note: note.isEmpty ? nil : note,
+                            date: date
                         )
                         dismiss()
                     } label: {
@@ -250,49 +261,49 @@ struct AddCategoryView: View {
         "pencil", "pencil.line", "text.document", "document", "lock.document", "list.bullet.clipboard",
         "list.clipboard", "heart.text.clipboard", "calendar", "book", "books.vertical", "text.book.closed",
         "bookmark", "graduationcap", "scroll",
-
+        
         // People & Figures
         "person", "person.crop.circle", "figure", "figure.2", "figure.2.arms.open", "figure.walk", "figure.run",
         "figure.dance", "figure.and.child.holdinghands", "figure.2.and.child.holdinghands",
-
+        
         // Office & School Supplies
         "folder", "backpack", "paperclip", "pencil.and.ruler", "ruler", "paintbrush", "paintbrush.pointed",
         "signature", "stethoscope", "printer", "case", "gearshape", "wrench.adjustable", "hammer",
-
+        
         // Technology & Devices
         "display", "pc", "laptopcomputer", "iphone", "apple.terminal", "wifi",
-
+        
         // Home & Furniture
         "sofa", "bed.double", "toilet", "shower", "refrigerator", "tent", "building",
-
+        
         // Security
         "lock", "lock.open", "checkmark.seal", "sos",
-
+        
         // Communication & Media
         "camera", "phone", "video", "envelope",
-
+        
         // Shopping & Finance
         "bag", "cart", "creditcard", "wallet.bifold",
-
+        
         // Travel & Transport
         "airplane", "car", "bus", "tram", "ferry", "bicycle", "moped", "stroller", "fuelpump",
-
+        
         // Nature & Weather
         "sun.max", "moon", "sparkle", "sparkles", "globe.americas", "globe.europe.africa",
         "globe.asia.australia", "globe.central.south.asia",
-
+        
         // Celebrations & Misc
         "party.popper", "balloon.2",
-
+        
         // Symbols & Icons
         "star", "heart", "flag", "tag", "infinity", "repeat", "shuffle",
-
+        
         // Animals
         "hare", "tortoise", "dog", "cat", "lizard", "bird", "fish", "pawprint",
-
+        
         // Clothing
         "tshirt",
-
+        
         // Entertainment
         "theatermasks", "powerplug", "powerplug.portrait"
     ]
